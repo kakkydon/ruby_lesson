@@ -78,4 +78,25 @@ numbers = [1,2,3,4]
 sum=0
 numbers.each do |n|
     # sum_valueはブロック内で初めて登場した変数なので、ブロック内でのみ有効
-    sum_value = n.even? 
+    sum_value = n.even? ? n * 10 : n
+    sum += sum_value
+end
+puts sum
+
+# do...endの代わりに{}を使うことも可能。長いブロックはdo...end、1行は{}でかく場合は多い
+numbers = [1,2,3,4]
+sum=0
+numbers.each {|n| sum += n}
+puts sum
+
+# ブロックを使う配列のメソッド(よく使われる)
+# each
+# map/collect
+# select/find_all
+# reject
+# find/detect
+# inject/reduce
+# map/collectメソッドについて。各要素に対してブロックを評価した結果を新しい配列にして返す。
+numbers=[1,2,3,4,5]
+new_numbers=numbers.map{|n| n*10}
+print new_numbers
