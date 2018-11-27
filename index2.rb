@@ -338,3 +338,120 @@ end
 
 # do...end と {}の結合度の違い。 4.8.7で詳細参照
 # 引数付きのメソッド呼び出しで{}をブロックとして使う場合は、メソッド引数の()を省略できない
+
+# timesメソッド
+# 配列を使わずに、単純にn回処理を繰り返す
+# 処理を5回繰り返す。nには0,1,2,3,4が入る。ブロック変数の省略も可
+sum = 0
+5.times{|n| sum+=n}
+p sum
+
+# uptoメソッド(Integerクラス)
+# nからmまで数値を１つずつ増やしながら何か処理したい場合 n.upto(m)
+# downtoメソッドはその逆
+a=[]
+10.upto(14){|n| a << n}
+p a
+
+# stepメソッド（Numericクラス）
+# 1,3,5,7のように、nからmまで数値をx個ずつ増やしながら何か処理したい場合
+# n.step(m,x)
+# 減らす場合は、mを負の値に。
+a=[]
+1.step(10,2){|n| a << n}
+p a
+
+# while文
+# while 条件式(真であれば実行)
+# 繰り返したい処理
+# end
+a=[]
+while a.size < 5
+    a << 1
+end
+p a
+
+# 1行で書くと。後置修飾子を利用
+a=[]
+a << 1 while a.size < 5
+p a
+
+# どんな条件でも最低1回は実行したい場合は begin..endで囲んでからwhileを書く
+a=[]
+begin
+    a<<1
+end while false
+p a
+
+# while文の反対はuntil。条件が偽である間、処理を繰り返す
+
+# for文
+# for 変数 in 配列やハッシュ(eachメソッドを定義しているオブジェクトなら何でもおｋ)
+# 繰り返し処理
+# end
+# Rubyでは使わない
+
+# 無限る―ぷを作る
+#while true
+    #無限ループのコード
+#end
+
+#loop do
+    #無限ループ用の処理
+#end
+
+# 無限ループから脱出するにはbreak
+numbers=[1,2,3,4,5]
+loop do
+    # sampleメソッドでランダムに要素を１つ取得する
+    n = numbers.sample
+    puts n
+    break if n==5
+end
+
+# throwとcatchを使った大枠脱出
+# catch タグ do
+# 繰り返し処理など
+# throw タグ
+# end
+# Rubyのthrow,catchは例外処理と関係なし。Rubyではraiseとrescueを例外処理で使う
+fruits=['apple','melon','orange']
+numbers=[1,2,3]
+catch :done do
+    fruits.shuffle.each do |fruit|
+        numbers.shuffle.each do |n|
+            puts "#{fruit},#{n}"
+            if fruit == 'orange' && n==3
+                # すべての繰り返い処理を脱出する
+                throw :done
+            end
+        end
+    end
+end
+
+# returnはメソッドから脱出してしまう。breakは繰り返し処理からの脱出。
+
+# nextは繰り返し処理を途中で中断し、次の繰り返し処理を進める
+numbers=[1,2,3,4,5]
+numbers.each do |n|
+    # 偶数であれば中断して次の繰り返し処理に進む
+    next if n.even?
+    puts n
+end
+
+# redoは繰り返し処理をやりなおしたい場合に使う。通常はやり直しの回数を制限する
+foods=['ピーマン','トマト','セロリ']
+count = 0
+foods.each do |food|
+    print "#{food}は好きですか？ =>"
+    # わざと「いいえ」しか答えないようにする
+    anser='いいえ'
+    puts anser
+
+    count += 1
+    # やりなおしは2回まで
+    redo if anser != 'はい' && count < 2
+
+    # カウントをリセット
+    count = 0
+end
