@@ -169,3 +169,94 @@ p h
 p %s!ruby is fun!
 p %s(ruby is fun)
 p %i(ruby is fun)
+
+# 条件分岐や定番の書き方（イディオム）その１
+# 条件分岐で変数に代入 / &.演算子。　変数への代入と条件分岐を同時に実現するイディオム
+
+# 国名に応じて通貨を返す（該当する通貨がなければnil）
+def find_currency(country)
+    currencies={japan: 'yen',us: 'dollar',india: 'rupee'}
+    currencies[country]
+end
+
+# 指定された国の通貨を大文字にして返す
+def show_currency(country)
+    currency=find_currency(country)
+    # nilでないことをチェック（nilだとupcaseが呼び出せないため）
+    if currency
+        currency.upcase
+    end
+end
+
+# 通貨が見つかる場合と見つからない場合の結果を確認
+p show_currency(:japan)
+p show_currency(:brazil)
+
+# 上をリファクタリング。Rubyでは変数への代入自体が戻り値を持つため、次のようにif文の中で直接変数に代入することも可能
+def show_currency(country)
+    # 値が取得できれば真、できなければ偽
+    if currency = find_currency(currency)
+        currency.upcase
+    end
+end
+
+# &.演算子を使ってメソッドを呼び出すと、メソッドを呼び出されたオブジェクトがnilでない場合はその結果を、nilだった場合はnilを返す
+# nil以外のオブジェクトであれば、a.upcaseと書いた場合と同じ
+a='foo'
+p a&.upcase
+a=nil
+p a&.upcase
+
+# &.演算子を使ってさらにリファクタリング
+def show_currency2(country)
+    country = find_currency(country)
+    country&.upcase
+end
+
+# 通貨が見つかる場合と見つからない場合の結果を確認
+p show_currency2(:japan)
+p show_currency2(:brazil)
+
+# 条件分岐や定番の書き方（イディオム）その２
+# ||=を使った自己代入
+# 変数limitがnilまたはfalseであれば、10を代入する（それ以外はlimitの値をそのまま使う）
+limit ||= 10
+
+limit = nil
+limit ||= 10
+p limit
+
+limit = 20
+limit ||= 10
+p limit
+
+# limit ||= 10は　limit = limit || 10
+# 論理演算子の||は式全体の真偽値が確定した時点で式の評価を終了して、その時の戻り値を返す
+# つまり、limitが真の場合(falseでもnilでもない)、limitまでで式の評価が終了するのでlimit=limitとなり、
+# 代入を実行してもとくに変わりません
+# limitが偽（falseまたはnil）であれば、Rubyは||の右辺である10を評価する
+# X ||= A　というコードを見たら「変数Xがnilまたfalseなら、AをXに代入」
+
+# 条件分岐や定番の書き方（イディオム）その3
+# !!を使った真偽値の型変換
+def user_exists?
+    # データベースなどからユーザを探す
+    user=find_user
+    if user
+        true
+    else
+        false
+    end
+end
+
+# 上記を!!でリファクタリング
+def user_exists?
+    !!find_user
+end
+# !は否定の演算子。!Aと書いた場合、Aが真であればfalseを、そうでなければtrueを返す。ここで
+# 値がtrueまたはfalseのどちらかに変換。それをもう一度!で反転されると、元のAに対応する真偽値がtrueまたはfalseとして得られる。
+p !!true
+p !!1
+p !!false
+p !!nil
+# !!がついたら、trueまたはfalseに変換するためだと解釈する
