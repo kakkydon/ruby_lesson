@@ -186,3 +186,171 @@ end
 
 p product=Product.new('A free movie')
 
+# Rubyにはインスタンス自身を表すselfキーワードがある。thisキーワードと同じ
+class User9
+    attr_accessor :name
+
+    def initialize(name)
+        @name=name
+    end
+
+    def hello
+        # selfなしでnameメソッドを呼ぶ
+        "Hello,I am #{name}."
+    end
+
+    def hi
+        # self付きでnameメソッドを呼ぶ
+        "Hi,I am #{self.name}."
+    end
+
+    def my_name
+        # 直接インスタンス変数の@nameにアクセスする
+        "My name is #{@name}"
+    end
+end
+
+user = User9.new('Alice')
+p user.hello
+p user.hi
+p user.my_name
+
+# 注意点　name= のようなセッターメソッドを呼び出したい場合は、必ずselfを付ける必要がある。
+# クラス定義内に登場するselfは場所によって「そのクラスのインスタンス自身」を表したり、
+# 「クラス自身」を表したりする。
+class Foo
+    # このputsはクラス定義の読み込み時に呼び出される
+    puts "クラス構文の直下のself: #{self}"
+
+    def self.bar
+        puts "クラスメソッド内のself: #{self}"
+    end
+
+    def baz
+        puts "インスタンスメソッド内のself: #{self}"
+    end
+end
+
+puts Foo.bar
+foo = Foo.new
+puts foo.baz
+
+# クラス構文の直下で直接クラスメソッドが呼び出される例
+class Foo
+    # この時点ではクラスメソッドbarが定義されていないので、呼び出せない
+    # NoMethodErrorが発生する
+    # self.bar
+
+    def self.bar
+        puts 'hello'
+    end
+
+    # クラス構文の直下でクラスメソッドを呼び出す
+    # クラスメソッドbarが定義された後なので、呼び出せる
+    puts self.bar
+end
+
+# クラスメソッドをインスタンスメソッドで呼び出す
+# クラス名.メソッド
+class Product2
+    attr_reader :name,:price
+
+    def initialize(name,price)
+        @name=name
+        @price=price
+    end
+
+    # 金額を整形するクラスメソッド
+    def self.format_price(price)
+        "#{price}円"
+    end
+
+    def to_s
+        # インスタンスメソッドからクラスメソッドを呼び出す
+        formatted_price=Product2.format_price(price)
+        "name:#{name},price#{formatted_price}"
+    end
+end
+
+product = Product2.new('A great movie',1000)
+puts  product.to_s
+# self.class.メソッドと書く場合もある。
+
+# 7.6クラスの継承
+# 親クラスをスーパークラス、子クラスをサブクラスと呼ぶ
+# クラスの継承が適切かどうかの判断は「サブクラス is a スーパークラス」と呼んで違和感がないか。
+# Rubyの継承は単一継承。Objectクラスが頂点で、継承している。
+# Objectは何も書かなくてもデフォルトで継承される
+# クラスを調べるには、classメソッド、継承関係かどうかを調べるにはis_a?メソッドを使う
+
+# 独自のクラスを継承する
+# class サブクラス < スーパークラス
+# end
+
+# superでスーパークラスのメソッドを呼び出す
+class Product3
+    attr_reader :name,:price
+
+    def initialize(name,price)
+        @name=name
+        @price=price
+    end
+end
+
+# メソッドのオーバーライド
+# サブクラスではスーパークラスと同名のメソッドを定義することで、
+# スーパークラスの処理を上書きすることができる。
+class Product4
+    attr_reader :name,:price
+
+    def initialize(name,price)
+        @name=name
+        @price=price
+    end
+
+    def to_s
+        "name:#{name},price: #{price}"
+    end
+end
+
+# DVDクラスはこれらに加えて再生時間を持つことにする
+class DVD < Product4
+    # nameとpriceはスーパークラスでattr_readerが設定されているので定義不要
+    attr_reader :running_time
+
+    def initialize(name,price,running_time)
+        # スーパークラスのinitializeメソッドを呼びだす
+        super(name,price)
+        # DVDクラス独自の属性
+        @running_time = running_time
+    end
+
+    def to_s
+#        "name:#{name},price: #{price},running_time:#{running_time}"
+        "#{super},running_time:#{running_time}"
+    end
+end
+
+dvd=DVD.new('A great movie',1000,120)
+p dvd.name
+p dvd.price
+p dvd.running_time
+
+product = Product4.new('A great movie',1000)
+dvd=DVD.new('An awesome film',3000,120)
+p product.to_s
+p dvd.to_s
+
+# クラスメソッドの継承
+# クラスを継承すると、クラスメソッドも継承される
+class Foo
+    def self.hello
+        'hello'
+    end
+end
+class Bar < Foo
+end
+p Foo.hello
+p Bar.hello
+
+# 
